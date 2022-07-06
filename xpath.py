@@ -1,11 +1,12 @@
 """XPath output plugin
-
-Much code stolen from the pyang tree plugin.
+Original comment: Much code stolen from the pyang tree plugin.
+This is a branch from: https://github.com/NSO-developer/pyang-xpath/blob/master/xpath.py
+Added options to print the module prefix, string append and prepend.
 """
 
 import optparse
 import sys
-import re
+
 
 from pyang import plugin
 from pyang import statements
@@ -37,6 +38,21 @@ class XPathPlugin(plugin.PyangPlugin):
             optparse.make_option("--xpath-substring",
                                  dest="xpath_substring",
                                  help="Only print nodes containing this substring"),
+            optparse.make_option("--xpath-print-prefix",
+                                 dest="xpath_printprefix",
+                                 action="store_true",
+                                 default=False,
+                                 help="Print prefix for all nodes"),
+            optparse.make_option("--xpath-append-string",
+                                 dest="xpath_appendstring",
+                                 help="Append a given string to the xpath"), 
+            optparse.make_option("--xpath-add-prefix-string",
+                                 dest="xpath_addprefixstring",
+                                 help="Append a given string to the xpath"),
+            optparse.make_option("--xpath-print-exact-depth",
+                                 dest="xpath_printdepth",
+                                 type=int,
+                                 help="Print prefix with fixed depth"), 
             ]
         g = optparser.add_option_group("XPath output specific options")
         g.add_options(optlist)
@@ -68,11 +84,8 @@ tailf-ncs-devices.yang:22: warning: imported module tailf-ncs-monitoring not use
 /zombies/service/plan/component/back-track-goal
 /zombies/service/plan/component/force-back-track
 /zombies/service/plan/component/force-back-track/back-tracking-goal
-
 >>>  augment /kicker:kickers:
-
 >>>  notifications:
-
 $ pyang -f xpath tailf-ncs.yang --xpath-name name --xpath-path /zombies
 tailf-ncs-devices.yang:22: warning: imported module tailf-ncs-monitoring not used
 >>> module: tailf-ncs
@@ -80,10 +93,8 @@ tailf-ncs-devices.yang:22: warning: imported module tailf-ncs-monitoring not use
 /zombies/service/plan/component/state/name
 /zombies/service/plan/component/private/property-list/property/name
 /zombies/service/re-deploy/commit-queue/failed-device/name
-
 >>>  augment /kicker:kickers:
 /notification-kicker/variable/name
-
 """)
 
 def emit_tree(ctx, modules, fd, depth, path):
@@ -185,6 +196,10 @@ def print_node(ctx, s, module, fd, prefix, path, mode, depth):
         name = s.arg
     else:
         name = s.i_module.i_prefix + ':' + s.arg
+        
+    if (ctx.opts.xpath_printprefix):
+        name = s.i_module.i_prefix + ':' + s.arg
+    
     if s.keyword in ['list', 'container', 'leaf', 
             'leaf-list', 'anydata', 'anyxml',
             'notification', 'rpc', ('tailf-common', 'action')]:
@@ -201,7 +216,17 @@ def print_node(ctx, s, module, fd, prefix, path, mode, depth):
     if(ctx.opts.xpath_substring and ctx.opts.xpath_substring not in name):
         hideline = True 
 
+    if(ctx.opts.xpath_printdepth):
+        if (line.count('/') != ctx.opts.xpath_printdepth):
+            hideline = True
+
     if(not hideline):
+        if(ctx.opts.xpath_addprefixstring):
+           line = ctx.opts.xpath_addprefixstring + ' ' + line
+
+        if(ctx.opts.xpath_appendstring):
+            line += ' ' + ctx.opts.xpath_appendstring
+        
         fd.write(line + '\n')
 
     if hasattr(s, 'i_children'):

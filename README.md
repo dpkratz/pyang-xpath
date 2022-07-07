@@ -53,3 +53,34 @@ tailf-ncs-devices.yang:22: warning: imported module tailf-ncs-monitoring not use
 Note that unless you copy the plugin to your pyang installation's 
 plugin directory, you will need to add a --plugindir= option to
 point out where you have your xpath.py plugin.
+
+
+---
+
+This fork introduces new print options specially crafted to work with 
+deviation files.
+
+```
+    --xpath-print-prefix
+                        Print prefix for all nodes
+    --xpath-append-string=XPATH_APPENDSTRING
+                        Append a given string to the xpath
+    --xpath-add-prefix-string=XPATH_ADDPREFIXSTRING
+                        Append a given string to the xpath
+    --xpath-print-exact-depth=XPATH_PRINTDEPTH
+                        Print prefix with fixed depth
+```
+Usage example:
+```
+$ pyang -f xpath openconfig-network-instance.yang \
+--xpath-path "/network-instances/network-instance/protocols/protocol/igmp/global" \
+--xpath-print-exact-depth=10 \
+--xpath-add-prefix-string '   deviation ' \
+--xpath-append-string ' { deviate not-supported; }'
+>>> module: openconfig-network-instance
+   deviation  /network-instances/network-instance/protocols/protocol/igmp/global/ssm/mappings/mapping/source  { deviate not-supported; }
+   deviation  /network-instances/network-instance/protocols/protocol/igmp/global/ssm/mappings/mapping/config  { deviate not-supported; }
+   deviation  /network-instances/network-instance/protocols/protocol/igmp/global/ssm/mappings/mapping/state  { deviate not-supported; }
+
+```
+All test were done against pyang version 2.5.3.

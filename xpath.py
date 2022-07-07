@@ -222,7 +222,8 @@ def print_node(ctx, s, module, fd, prefix, path, mode, depth):
 
     if(not hideline):
         if(ctx.opts.xpath_addprefixstring):
-           line = ctx.opts.xpath_addprefixstring + ' ' + line
+            if not (line.startswith(ctx.opts.xpath_addprefixstring)):
+                line = ctx.opts.xpath_addprefixstring + ' ' + line
 
         if(ctx.opts.xpath_appendstring):
             line += ' ' + ctx.opts.xpath_appendstring

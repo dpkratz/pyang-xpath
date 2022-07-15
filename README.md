@@ -83,4 +83,19 @@ $ pyang -f xpath openconfig-network-instance.yang \
    deviation  /network-instances/network-instance/protocols/protocol/igmp/global/ssm/mappings/mapping/state  { deviate not-supported; }
 
 ```
+
+```
+$ pyang -f xpath 'openconfig-system@2018-01-21.yang' \
+--xpath-print-prefix \
+--xpath-substring 'state' \
+--xpath-add-prefix-string '   deviation ' \
+--xpath-append-string ' { deviate not-supported; }'
+>>> module: openconfig-system
+   deviation  /oc-sys:system/oc-sys:state  { deviate not-supported; }
+   deviation  /oc-sys:system/oc-sys:clock/oc-sys:state  { deviate not-supported; }
+   deviation  /oc-sys:system/oc-sys:dns/oc-sys:state  { deviate not-supported; }
+   deviation  /oc-sys:system/oc-sys:dns/oc-sys:servers/oc-sys:server/oc-sys:state  { deviate not-supported; }
+   deviation  /oc-sys:system/oc-sys:dns/oc-sys:host-entries/oc-sys:host-entry/oc-sys:state  { deviate not-supported; }
+```
+
 All test were done against pyang version 2.5.3.

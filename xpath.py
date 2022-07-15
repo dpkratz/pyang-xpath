@@ -226,9 +226,9 @@ def print_node(ctx, s, module, fd, prefix, path, mode, depth):
                 line = ctx.opts.xpath_addprefixstring + ' ' + line
 
         if(ctx.opts.xpath_appendstring):
-            line += ' ' + ctx.opts.xpath_appendstring
-        
-        fd.write(line + '\n')
+            fd.write(line + ' ' + ctx.opts.xpath_appendstring + ' ' '\n')
+        else:        
+            fd.write(line + '\n')
 
     if hasattr(s, 'i_children'):
         if depth is not None:

@@ -19,6 +19,8 @@ element in a large YANG file, and looking for the exact path it
                         Only print nodes with this exact name
     --xpath-substring=XPATH_SUBSTRING
                         Only print nodes containing this substring
+    --xpath-print-augment-absolute-path
+                        Print absolute path for augmentations
 ```
 
 A couple of examples:

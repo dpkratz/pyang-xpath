@@ -6,7 +6,7 @@ Added options to print the module prefix, string append and prepend.
 
 import optparse
 import sys
-
+#import pydevd
 
 from pyang import plugin
 from pyang import statements
@@ -53,6 +53,12 @@ class XPathPlugin(plugin.PyangPlugin):
                                  dest="xpath_printdepth",
                                  type=int,
                                  help="Print prefix with fixed depth"), 
+            optparse.make_option("--xpath-print-augment-absolute-path",
+                                 dest="xpath_augment_path",
+                                 action="store_true",
+                                 default=False,
+                                 help="Print absolute path for augmentations"),
+            
             ]
         g = optparser.add_option_group("XPath output specific options")
         g.add_options(optlist)
@@ -98,6 +104,7 @@ tailf-ncs-devices.yang:22: warning: imported module tailf-ncs-monitoring not use
 """)
 
 def emit_tree(ctx, modules, fd, depth, path):
+    #pydevd.settrace()
     for module in modules:
         printed_header = False
 
@@ -139,6 +146,9 @@ def emit_tree(ctx, modules, fd, depth, path):
                         print_header()
                         printed_header = True
                     fd.write(">>>  augment %s:\n" % augment.arg)
+                    # Temporary solution to print absute path for module augmentation
+                    global augmented_path
+                    augmented_path = augment.arg
                     print_children(ctx, augment.i_children, m, fd,
                                    '', path, 'augment', depth)
 
@@ -191,6 +201,9 @@ def print_children(ctx, i_children, module, fd, prefix, path, mode, depth):
 def print_node(ctx, s, module, fd, prefix, path, mode, depth):
     line = prefix
     hideline = False
+
+    if(ctx.opts.xpath_augment_path and mode == 'augment' and line.count('/')==0):
+        line = augmented_path + line
 
     if s.i_module.i_modulename == module.i_modulename:
         name = s.arg

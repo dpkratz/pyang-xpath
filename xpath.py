@@ -6,6 +6,7 @@ Added options to print the module prefix, string append and prepend.
 
 import optparse
 import sys
+import re
 #import pydevd
 
 from pyang import plugin
@@ -58,7 +59,15 @@ class XPathPlugin(plugin.PyangPlugin):
                                  action="store_true",
                                  default=False,
                                  help="Print absolute path for augmentations"),
-            
+            optparse.make_option("--xpath-print-keyword",
+                                 dest="xpath_printkeyword",
+                                 action="store_true",
+                                 default=False,
+                                 help="Print keyword for debug purpose"),
+            optparse.make_option("--xpath-exclude-keyword-regex",
+                                 dest="xpath_excluderegex",
+                                 default=False,
+                                 help="Hide all nodes that match the keyword regex."),            
             ]
         g = optparser.add_option_group("XPath output specific options")
         g.add_options(optlist)
@@ -201,6 +210,12 @@ def print_children(ctx, i_children, module, fd, prefix, path, mode, depth):
 def print_node(ctx, s, module, fd, prefix, path, mode, depth):
     line = prefix
     hideline = False
+    
+    if (ctx.opts.xpath_printkeyword):
+        print (">>>> keyword: " + s.keyword)
+    
+    if (re.match(ctx.opts.xpath_excluderegex, s.keyword)):
+        hideline = True
 
     if(ctx.opts.xpath_augment_path and mode == 'augment' and line.count('/')==0):
         line = augmented_path + line

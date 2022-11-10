@@ -214,7 +214,7 @@ def print_node(ctx, s, module, fd, prefix, path, mode, depth):
     if (ctx.opts.xpath_printkeyword):
         print (">>>> keyword: " + s.keyword)
     
-    if (re.match(ctx.opts.xpath_excluderegex, s.keyword)):
+    if (ctx.opts.xpath_excluderegex and re.match(ctx.opts.xpath_excluderegex, s.keyword)):
         hideline = True
 
     if(ctx.opts.xpath_augment_path and mode == 'augment' and line.count('/')==0):

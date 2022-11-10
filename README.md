@@ -71,6 +71,12 @@ deviation files.
                         Append a given string to the xpath
     --xpath-print-exact-depth=XPATH_PRINTDEPTH
                         Print prefix with fixed depth
+    --xpath-print-augment-absolute-path
+                        Print absolute path for augmentations
+    --xpath-print-keyword
+                        Print keyword for debug purpose
+    --xpath-exclude-keyword-regex=XPATH_EXCLUDEREGEX
+                        Hide all nodes that match the keyword regex.
 ```
 Usage example:
 ```
@@ -98,6 +104,56 @@ $ pyang -f xpath 'openconfig-system@2018-01-21.yang' \
    deviation  /oc-sys:system/oc-sys:dns/oc-sys:state  { deviate not-supported; }
    deviation  /oc-sys:system/oc-sys:dns/oc-sys:servers/oc-sys:server/oc-sys:state  { deviate not-supported; }
    deviation  /oc-sys:system/oc-sys:dns/oc-sys:host-entries/oc-sys:host-entry/oc-sys:state  { deviate not-supported; }
+```
+
+```
+$ pyang -f xpath openconfig-bfd.yang --xpath-print-prefix \
+--xpath-print-augment-absolute-path \
+--xpath-add-prefix-string '   deviation ' \
+--xpath-append-string ' { deviate not-supported; }' \
+--xpath-print-keyword
+openconfig-bfd.yang:15: warning: imported module "openconfig-if-types" not used
+>>> module: openconfig-bfd
+>>>> keyword: container
+   deviation  /oc-bfd:bfd  { deviate not-supported; }
+>>>> keyword: container
+   deviation  /oc-bfd:bfd/oc-bfd:interfaces  { deviate not-supported; }
+>>>> keyword: list
+   deviation  /oc-bfd:bfd/oc-bfd:interfaces/oc-bfd:interface  { deviate not-supported; }
+>>>> keyword: leaf
+```
+
+```
+% pyang -f xpath *.yang --xpath-print-prefix \
+--xpath-print-augment-absolute-path \
+--xpath-add-prefix-string '   deviation ' \
+--xpath-append-string ' { deviate not-supported; }' \
+--xpath-print-keyword 2>/dev/null | grep "keyword:" | sort | uniq -c | sort -rn
+3093 >>>> keyword: leaf
+1962 >>>> keyword: container
+ 245 >>>> keyword: leaf-list
+ 219 >>>> keyword: list
+  32 >>>> keyword: case
+  14 >>>> keyword: rpc
+  12 >>>> keyword: input
+  10 >>>> keyword: choice
+   8 >>>> keyword: anyxml
+   3 >>>> keyword: output
+```   
+   
+```
+$ pyang -f xpath openconfig-bfd.yang --xpath-print-prefix \
+--xpath-print-augment-absolute-path \
+--xpath-add-prefix-string '   deviation ' \
+--xpath-append-string ' { deviate not-supported; }' \
+--xpath-exclude-keyword-regex 'container|list|leaf-list'
+openconfig-bfd.yang:15: warning: imported module "openconfig-if-types" not used
+>>> module: openconfig-bfd
+   deviation  /oc-bfd:bfd/oc-bfd:interfaces/oc-bfd:interface/oc-bfd:id  { deviate not-supported; }
+   deviation  /oc-bfd:bfd/oc-bfd:interfaces/oc-bfd:interface/oc-bfd:config/oc-bfd:id  { deviate not-supported; }
+   deviation  /oc-bfd:bfd/oc-bfd:interfaces/oc-bfd:interface/oc-bfd:config/oc-bfd:enabled  { deviate not-supported; }
+   deviation  /oc-bfd:bfd/oc-bfd:interfaces/oc-bfd:interface/oc-bfd:config/oc-bfd:local-address  { deviate not-supported; }
+   deviation  /oc-bfd:bfd/oc-bfd:interfaces/oc-bfd:interface/oc-bfd:config/oc-bfd:desired-minimum-tx-interval  { deviate not-supported; }
 ```
 
 All test were done against pyang version 2.5.3.

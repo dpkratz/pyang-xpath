@@ -157,6 +157,9 @@ openconfig-bfd.yang:15: warning: imported module "openconfig-if-types" not used
 ```
 
 ```
+pyang -f xpath openconfig-bfd.yang --xpath-print-prefix \
+--xpath-print-augment-absolute-path \
+--xpath-append-keyword
 openconfig-bfd.yang:15: warning: imported module "openconfig-if-types" not used
 >>> module: openconfig-bfd
 /oc-bfd:bfd container

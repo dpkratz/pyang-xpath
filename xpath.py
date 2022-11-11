@@ -59,6 +59,11 @@ class XPathPlugin(plugin.PyangPlugin):
                                  action="store_true",
                                  default=False,
                                  help="Print absolute path for augmentations"),
+            optparse.make_option("--xpath-append-keyword",
+                                 dest="xpath_appendkeyword",
+                                 action="store_true",
+                                 default=False,
+                                 help="Append the keyword at the end of xpath line"),
             optparse.make_option("--xpath-print-keyword",
                                  dest="xpath_printkeyword",
                                  action="store_true",
@@ -254,9 +259,15 @@ def print_node(ctx, s, module, fd, prefix, path, mode, depth):
                 line = ctx.opts.xpath_addprefixstring + ' ' + line
 
         if(ctx.opts.xpath_appendstring):
-            fd.write(line + ' ' + ctx.opts.xpath_appendstring + ' ' '\n')
-        else:        
-            fd.write(line + '\n')
+            if(ctx.opts.xpath_appendkeyword):
+                fd.write(line + ' ' + ctx.opts.xpath_appendstring + ' ' + s.keyword + '\n')
+            else:
+                fd.write(line + ' ' + ctx.opts.xpath_appendstring + ' ' '\n')
+        else:
+            if(ctx.opts.xpath_appendkeyword):
+                fd.write(line + ' ' + s.keyword + '\n')
+            else:
+                fd.write(line + '\n')
 
     if hasattr(s, 'i_children'):
         if depth is not None:

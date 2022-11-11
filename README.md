@@ -156,4 +156,13 @@ openconfig-bfd.yang:15: warning: imported module "openconfig-if-types" not used
    deviation  /oc-bfd:bfd/oc-bfd:interfaces/oc-bfd:interface/oc-bfd:config/oc-bfd:desired-minimum-tx-interval  { deviate not-supported; }
 ```
 
+```
+openconfig-bfd.yang:15: warning: imported module "openconfig-if-types" not used
+>>> module: openconfig-bfd
+/oc-bfd:bfd container
+/oc-bfd:bfd/oc-bfd:interfaces container
+/oc-bfd:bfd/oc-bfd:interfaces/oc-bfd:interface list
+/oc-bfd:bfd/oc-bfd:interfaces/oc-bfd:interface/oc-bfd:id leaf
+```
+
 All test were done against pyang version 2.5.3.
